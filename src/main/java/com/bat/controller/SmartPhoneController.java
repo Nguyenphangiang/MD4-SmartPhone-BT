@@ -51,4 +51,8 @@ public class SmartPhoneController {
         smartPhoneService.save(smartPhone);
         return new ResponseEntity<>(smartPhone,HttpStatus.ACCEPTED);
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<SmartPhone> findOne(@PathVariable Long id){
+        return new ResponseEntity<>(smartPhoneService.findById(id).get(),HttpStatus.OK);
+    }
 }

@@ -42,6 +42,7 @@
 </table>
 
 <script>
+
     function addNewSmartPhone(){
         //lay data
         let producer = $('#producer').val();
@@ -84,41 +85,61 @@
                               <td>${data[i].model}</td>
                                <td>${data[i].price}</td>
                                <td><button type="button" onclick="showEditForm(${data[i].id})" data-bs-toggle="modal" data-bs-target="#myModal">update</button></td>
-                               <td><button>delete</button></td>
+                               <td><button onclick="deleteSmartphone(${data[i].id})">delete</button></td>
                 </tr>`;
                 }
                 document.getElementById('showList').innerHTML = content;
             }
         });
     }
-    // $(document).ready(function (){
-    //     // su kien nao thuc hien ajax
-    //     $('.deleteSmartphone').click(function (event){
-    //         //lay du lieu
-    //         let a = $(this);
-    //         let smartphoneId = a.attr("href");
-    //         //goi ajax
-    //         $.ajax({
-    //             type: "DELETE",
-    //             url: `/smartphones/${smartphoneId}`,
-    //             success:function (data){
-    //                 a.parent().parent().remove();
-    //             }
-    //         });
-    //         event.preventDefault();
-    //     })
-    // })
-    successHandler()
+    function showEditForm(id) {
+        let content = `<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="updateSmartphone(${id})">Update</button> `;
+        document.getElementById('showEdit').innerHTML = content;
+        $.ajax({
+            type:"GET",
+            url:`/smartphones/${id}`,
+            success:function (smartphone){
+                $(`#u-producer`).val(smartphone.producer)
+                $(`#u-model`).val(smartphone.model)
+                $(`#u-price`).val(smartphone.price)
+            }
+        })
+
+    }
+    function updateSmartphone(id){
+        let producer = $(`#u-producer`).val();
+        let model = $(`#u-model`).val();
+        let price = $(`#u-price`).val();
+        let smartPhone = {
+            producer : producer,
+            model : model,
+            price : price
+        }
+        $.ajax({
+            headers:{
+                'Accept' : 'application/json',
+                'Content-Type' : 'application/json'
+            },
+            type:"PUT",
+            data: JSON.stringify(smartPhone),
+            url:`/smartphones/${id}`,
+            success:function (){
+                successHandler()
+            }
+        })
+    }
+    function deleteSmartphone(id) {
+        $.ajax({
+            type:"DELETE",
+            url:`/smartphones/${id}`,
+            success:function (){
+                successHandler()
+            }
+        })
+    }
+    $(document).ready( successHandler())
 </script>
-<div class="container mt-3">
-    <h3>Modal Example</h3>
-    <p>Click on the button to open the modal.</p>
-
-    <button type="button" class="btn btn-primary" >
-        Open modal
-    </button>
-</div>
-
 <!-- The Modal -->
 <div class="modal" id="myModal">
     <div class="modal-dialog">
@@ -129,17 +150,29 @@
                 <h4 class="modal-title">Modal Heading</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
+            <form >
+                <!-- Modal body -->
+                <div class="modal-body">
 
-            <!-- Modal body -->
-            <div class="modal-body">
-                Modal body..
-            </div>
+                    <div>
+                        <label>Producer:</label>
+                        <input type="text" id="u-producer">
+                    </div>
+                    <div>
+                        <label>Model:</label>
+                        <input type="text" id="u-model">
+                    </div>
+                    <div>
+                        <label>Price:</label>
+                        <input type="text" id="u-price">
+                    </div>
+                </div>
 
-            <!-- Modal footer -->
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-            </div>
+                <!-- Modal footer -->
+                <div class="modal-footer" id="showEdit">
 
+                </div>
+            </form>
         </div>
     </div>
 </div>
